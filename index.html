@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#061c33">
+  <title>Fuel Me — Smart Self-Service Fueling</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="phone">
+
+  <!-- Simple iPhone 11/12-style status bar: no Dynamic Island, no gestures -->
+  <div class="ios-status-bar" id="iosStatusBar" aria-hidden="true">
+    <span class="ios-time" id="iosTime">9:41</span>
+    <span class="ios-status-icons">
+      <span class="signal-icon"><i></i><i></i><i></i><i></i></span>
+      <span class="wifi-icon">⌁</span>
+      <span class="battery-icon"><i></i></span>
+    </span>
+  </div>
+
+  <!-- SPLASH -->
+  <section id="splashScreen" class="screen splash-screen">
+    <div class="splash-glow"></div>
+    <div class="fuel-logo">
+      <div class="logo-drop">⛽</div>
+      <div class="logo-ring"></div>
+      <span class="leaf">⌁</span>
+    </div>
+    <h1>Fuel <span>Me</span></h1>
+    <p class="tagline">Fuel <b>•</b> Pay <b>•</b> Go</p>
+    <div class="splash-bottom">
+      <p>Smarter Fueling for a<br>Better Tomorrow</p>
+      <div class="loading-line"><i></i></div>
+    </div>
+  </section>
+
+  <!-- LOGIN / ACCOUNT SELECTOR -->
+  <section id="loginScreen" class="screen app-screen hidden">
+    <header class="topbar login-topbar">
+      <div>
+        <p class="eyebrow">Welcome to</p>
+        <h2>Fuel Me</h2>
+      </div>
+      <div class="avatar login-avatar-main">F</div>
+    </header>
+    <main class="content login-content">
+      <div class="login-hero">
+        <div class="login-icon">⛽</div>
+        <h1>Choose your account</h1>
+        <p>Fueling, payments and transaction history are private to each customer.</p>
+      </div>
+      <h3 class="login-section-title">Saved Accounts</h3>
+      <div id="savedAccounts" class="saved-accounts"></div>
+      <button class="primary-btn" onclick="startNewAccount()">Create New Account</button>
+      <div class="login-security">🔒 <b>Private customer data</b><span>Each account has its own profile, payment session and transaction history.</span></div>
+    </main>
+  </section>
+
+  <!-- HOME -->
+  <section id="homeScreen" class="screen app-screen hidden">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Good Morning,</p>
+        <h2 id="homeGreeting">Guest!</h2>
+      </div>
+      <div class="top-actions">
+        <button class="circle-btn" aria-label="Notifications">♧</button>
+        <button class="avatar" id="homeAvatar" onclick="openProfile()">G</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <div id="accountGate" class="account-gate hidden">
+        <div class="gate-icon">!</div>
+        <div>
+          <b>Complete your Fuel Me profile</b>
+          <span>Fueling is available only for registered accounts.</span>
+        </div>
+        <button onclick="openProfile()">Set Up</button>
+      </div>
+
+      <button id="scanBanner" class="scan-banner" onclick="openScanner()">
+        <div class="scan-icon">⌗</div>
+        <div class="scan-copy">
+          <b>Scan QR Code</b>
+          <span id="scanBannerText">Scan the unique QR code<br>at the fuel pump to start</span>
+        </div>
+        <div class="round-arrow">›</div>
+      </button>
+
+      <div id="accountStats" class="stats-grid account-only hidden">
+        <div class="stat-card">
+          <div class="stat-icon blue">◉</div>
+          <span>Monthly Average</span>
+          <strong id="monthlyAverage">₹0</strong>
+          <small id="monthlyAverageNote">Based on this month</small>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">⛽</div>
+          <span>Total Transactions</span>
+          <strong id="totalTransactions">0</strong>
+          <small id="transactionMonth">This Month</small>
+        </div>
+      </div>
+
+      <div id="recentSection" class="section-head account-only hidden">
+        <h3>Recent Transactions</h3>
+        <button onclick="openHistory()">View All</button>
+      </div>
+      <div id="recentTransactions" class="transactions account-only hidden"></div>
+      <div id="homeEmpty" class="empty-state account-only hidden">No completed fuel transactions yet.</div>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="active" onclick="goHome()"><span>⌂</span>Home</button>
+      <button id="historyNavHome" class="account-only hidden" onclick="openHistory()"><span>◷</span>History</button>
+      <button onclick="openProfile()"><span>♙</span>Profile</button>
+    </nav>
+  </section>
+
+  <!-- QR SCANNER -->
+  <section id="scannerScreen" class="screen scanner-screen hidden">
+    <div class="scanner-top">
+      <button class="back-btn" onclick="goHome()">‹</button>
+      <div>
+        <h2>Scan QR Code</h2>
+        <p>Scan the QR code on the fuel pump<br>to continue</p>
+      </div>
+    </div>
+
+    <div class="scanner-area">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div class="demo-qr">
+        <div class="qr-grid">
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+      </div>
+      <div class="scan-laser"></div>
+    </div>
+
+    <p class="scanner-note">Prototype mode — tap the button to detect the pump QR.</p>
+    <button class="primary-btn scanner-btn" onclick="simulateScan()">Scan Pump QR</button>
+    <button class="flash-btn">◉ &nbsp; Flashlight (prototype)</button>
+  </section>
+
+  <!-- PAYMENT -->
+  <section id="paymentScreen" class="screen app-screen hidden">
+    <header class="inner-header">
+      <button class="back-btn dark" onclick="goHome()">‹</button>
+      <h2>Payment Method</h2>
+      <span></span>
+    </header>
+    <main class="content payment-content">
+      <div class="pump-card">
+        <div class="pump-symbol">⛽</div>
+        <div>
+          <b>Pump <span id="pumpLabel">PUMP001</span></b>
+          <small>● Connected</small>
+        </div>
+      </div>
+
+      <div class="amount-header">
+        <h3>Fuel Amount</h3>
+        <button onclick="focusAmount()">Edit</button>
+      </div>
+      <div class="amount-input">
+        <span>₹</span>
+        <input id="fuelAmount" type="number" value="500" min="1" step="1" inputmode="numeric" autocomplete="off">
+      </div>
+      <p class="rate-note" id="fuelRateNote">Petrol rate: ₹110 / litre</p>
+      <div class="quantity-preview">Estimated fuel quantity: <b id="fuelQuantityPreview">4.55 Litres</b></div>
+
+      <h3 class="payment-title">Choose Fuel Type</h3>
+      <div class="fuel-type-list">
+        <button class="fuel-type-option selected" data-fuel="Petrol" onclick="selectFuelType(this)">
+          <span class="fuel-type-icon petrol">P</span>
+          <div><b>Petrol</b><small>For petrol vehicles</small></div>
+          <span class="fuel-check">✓</span>
+        </button>
+        <button class="fuel-type-option" data-fuel="Diesel" onclick="selectFuelType(this)">
+          <span class="fuel-type-icon diesel">D</span>
+          <div><b>Diesel</b><small>For diesel vehicles</small></div>
+          <span class="fuel-check">✓</span>
+        </button>
+      </div>
+
+      <h3 class="payment-title">Choose Payment Method</h3>
+      <div class="payment-list">
+        <button class="payment-option selected" data-method="UPI" onclick="selectPayment(this)">
+          <span class="method-icon upi">UPI</span>
+          <div><b>UPI</b><small>Google Pay / PhonePe / Paytm</small></div><strong>›</strong>
+        </button>
+        <button class="payment-option" data-method="Card" onclick="selectPayment(this)">
+          <span class="method-icon card">▣</span>
+          <div><b>Credit / Debit Card</b><small>Visa / Mastercard</small></div><strong>›</strong>
+        </button>
+        <button class="payment-option" data-method="Wallet" onclick="selectPayment(this)">
+          <span class="method-icon wallet">▰</span>
+          <div><b>Wallet</b><small>Digital wallet</small></div><strong>›</strong>
+        </button>
+        <button class="payment-option" data-method="Cash" onclick="selectPayment(this)">
+          <span class="method-icon cash">₹</span>
+          <div><b>Cash</b><small>Cash confirmation at station</small></div><strong>›</strong>
+        </button>
+      </div>
+
+      <button class="primary-btn" onclick="startPayment()">Continue</button>
+    </main>
+  </section>
+
+  <!-- AUTHORIZATION -->
+  <section id="authorizationScreen" class="screen dark-status hidden">
+    <div class="status-content">
+      <div class="auth-ring"><div class="auth-card">▣<span>✓</span></div></div>
+      <h1>Authorizing Payment</h1>
+      <p id="authorizationText">Please wait while we securely<br>process your payment...</p>
+      <div class="authorization-amount">Authorized amount <b id="authAmount">₹500</b></div>
+      <div class="steps">
+        <div id="authStep1" class="step current"><i></i>Verifying Details</div>
+        <div id="authStep2" class="step"><i></i>Processing with Bank</div>
+        <div id="authStep3" class="step"><i></i>Confirming Transaction</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUCCESS -->
+  <section id="successScreen" class="screen success-screen hidden">
+    <div class="status-content">
+      <div class="success-check">✓</div>
+      <h1>Payment Successful!</h1>
+      <p>Your payment of <b id="successAmount">₹500</b><br>has been authorized for this exact amount.</p>
+      <div class="mini-receipt">
+        <b><span id="successMethod">UPI</span> • AUTHORIZED</b>
+        <div><span>Transaction ID</span><strong id="successTx"></strong></div>
+        <div><span>Date & Time</span><strong id="successTime"></strong></div>
+      </div>
+      <button class="primary-btn" onclick="startDispensing()">Proceed to Dispensing</button>
+    </div>
+  </section>
+
+  <!-- DISPENSING -->
+  <section id="dispensingScreen" class="screen dispensing-screen hidden">
+    <header class="dispense-header">
+      <button class="back-btn" onclick="goHome()">‹</button>
+      <div>
+        <h2>Fueling in Progress</h2>
+        <p>Please keep the nozzle inserted<br>until fueling is complete.</p>
+      </div>
+    </header>
+
+    <div class="fuel-station-visual" id="fuelStationVisual">
+      <div class="station-pole"></div>
+      <div class="station-roof"></div>
+      <div class="vehicle-scene" id="vehicleScene">
+        <div class="vehicle-shadow"></div>
+        <div class="vehicle-emoji" id="vehicleEmoji">🏍️</div>
+        <div class="vehicle-type-badge" id="vehicleTypeBadge">2 WHEELER</div>
+        <div class="fuel-cap" id="fuelCap">●</div>
+      </div>
+      <div class="pump-machine">⛽</div>
+      <div class="fuel-hose" id="fuelHose"></div>
+      <div class="nozzle" id="fuelNozzle" aria-label="Fuel nozzle inserted at vehicle fuel tank">⛽</div>
+    </div>
+
+    <div class="dispense-card">
+      <h3>⛽ &nbsp;Pump <span id="dispensePump">PUMP001</span> <em>•</em> <span id="dispenseFuelType">Petrol</span></h3>
+      <div class="vehicle-detection-line"><span class="vehicle-detection-icon">✓</span><span>Vehicle detected:</span><b id="dispenseVehicleType">2 Wheeler</b><span class="vehicle-number" id="dispenseVehicleNumber">MP09AB1234</span></div>
+      <div class="live-badge"><i></i> DISPENSING</div>
+      <div class="progress-row"><span>Fuel dispensing</span><b id="progressPercent">0%</b></div>
+      <div class="progress"><i id="progressBar"></i></div>
+      <div class="dispense-stats">
+        <div><small>Authorized Amount</small><b>₹<span id="dispenseAmount">500</span></b></div>
+        <div><small>Fuel Quantity</small><b><span id="volume">5.0</span> L</b></div>
+      </div>
+    </div>
+    <button id="finishBtn" class="primary-btn finish-btn hidden" onclick="finishFueling()">Finish Fueling</button>
+  </section>
+
+  <!-- COMPLETE -->
+  <section id="completeScreen" class="screen complete-screen hidden">
+    <div class="success-check">✓</div>
+    <h1>Fueling Complete!</h1>
+    <p>Your fuel has been dispensed successfully.</p>
+    <div class="complete-card">
+      <div><span>⛽</span><b>Pump <span id="completePump">PUMP001</span><small id="completeFuelType">Petrol</small></b></div>
+      <hr>
+      <div><span>Amount</span><b>₹<span id="completeAmount">500</span></b></div>
+      <div><span>Volume</span><b><span id="completeVolume">5.0</span> L</b></div>
+    </div>
+    <div class="thank-you">✓ &nbsp; Transaction recorded in your<br><b>Fuel Me History</b></div>
+    <button class="primary-btn" onclick="openReceipt()">Generate Receipt</button>
+  </section>
+
+  <!-- RECEIPT -->
+  <section id="receiptScreen" class="screen app-screen hidden">
+    <header class="inner-header">
+      <button class="back-btn dark" onclick="goHome()">‹</button>
+      <h2>Digital Receipt</h2>
+      <span></span>
+    </header>
+    <main class="content receipt-content">
+      <div class="receipt">
+        <div class="receipt-brand">
+          <div class="small-logo">⛽</div>
+          <b>Fuel <span>Me</span></b>
+          <small>SMART SELF-SERVICE FUELING</small>
+        </div>
+
+        <div class="receipt-status">✓ PAYMENT SUCCESSFUL</div>
+        <div class="receipt-line"></div>
+
+        <div class="receipt-title">Transaction Details</div>
+        <div class="receipt-row"><span>Customer Name</span><b id="receiptCustomer">Guest</b></div>
+        <div class="receipt-row"><span>Vehicle Number</span><b id="receiptVehicle">—</b></div>
+        <div class="receipt-row"><span>Pump ID</span><b id="receiptPump"></b></div>
+        <div class="receipt-row"><span>Amount Paid</span><b id="receiptAmount"></b></div>
+        <div class="receipt-row"><span>Payment Mode</span><b id="receiptMethod"></b></div>
+        <div class="receipt-row"><span>Fuel Quantity</span><b id="receiptVolume"></b></div>
+        <div class="receipt-row"><span>Date & Time</span><b id="receiptTime"></b></div>
+        <div class="receipt-row"><span>Transaction ID</span><b id="receiptTx"></b></div>
+
+        <div class="receipt-total">
+          <span>Total Paid</span>
+          <strong id="receiptTotal">₹500</strong>
+        </div>
+
+        <div class="paid-badge">SUCCESS</div>
+        <div class="receipt-code">FUEL ME • <span id="receiptShortId"></span></div>
+        <p class="receipt-foot">Thank you for using Fuel Me.<br>Fuel smart • Fuel fast • Go further.</p>
+      </div>
+
+      <div class="two-buttons">
+        <button class="outline-btn" onclick="downloadReceipt()">Print / Save</button>
+        <button class="primary-btn" onclick="goHome()">Back to Home</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- HISTORY -->
+  <section id="historyScreen" class="screen history-screen hidden">
+    <header class="history-header">
+      <button class="back-btn" onclick="goHome()">‹</button>
+      <h2>Transaction History</h2>
+      <span></span>
+    </header>
+    <div class="filter-row">
+      <button class="active" onclick="setHistoryFilter('All', this)">All</button>
+      <button onclick="setHistoryFilter('Petrol', this)">Petrol</button>
+      <button onclick="setHistoryFilter('Diesel', this)">Diesel</button>
+    </div>
+    <main id="historyContent" class="content history-content"></main>
+  </section>
+
+  <!-- PROFILE -->
+  <section id="profileScreen" class="screen profile-screen hidden">
+    <header class="history-header">
+      <button class="back-btn" onclick="goHome()">‹</button>
+      <h2>My Profile</h2><span></span>
+    </header>
+    <main class="content profile-content">
+      <div class="profile-hero">
+        <div class="profile-avatar" id="profileAvatar">G</div>
+        <div>
+          <h2 id="profileDisplayName">Complete your profile</h2>
+          <p id="profileStatus">Account setup required before fueling</p>
+        </div>
+      </div>
+
+      <div class="profile-status-card" id="profileStatusCard">
+        <div class="status-dot"></div>
+        <div><b id="profileStatusTitle">Profile incomplete</b><span id="profileStatusText">Add your details to unlock self-service fueling.</span></div>
+      </div>
+
+      <form id="profileForm" class="profile-form" onsubmit="saveProfile(event)">
+        <h3>Personal Details</h3>
+        <label>Full Name <span>*</span><input id="profileName" type="text" maxlength="50" placeholder="Enter your full name" required></label>
+        <label>Mobile Number <span>*</span><input id="profileMobile" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" required></label>
+        <label>Email Address <span>*</span><input id="profileEmail" type="email" maxlength="80" placeholder="you@example.com" required></label>
+
+        <h3>Vehicle Details</h3>
+        <label>Vehicle Number <span>*</span><input id="profileVehicle" type="text" maxlength="15" placeholder="e.g. MP09AB1234" required></label>
+        <label>Vehicle Type <span>*</span>
+          <select id="profileVehicleType" required>
+            <option value="">Select vehicle type</option>
+            <option>Two Wheeler</option>
+            <option>Four Wheeler</option>
+            <option>Three Wheeler</option>
+            <option>Commercial Vehicle</option>
+          </select>
+        </label>
+
+        <button class="primary-btn profile-save-btn" type="submit">Save & Activate Account</button>
+      </form>
+
+      <div class="account-safety-note">
+        <b>🔒 Fueling access is protected</b>
+        <span>A customer must have a completed Fuel Me account before a pump QR can start a fueling session.</span>
+      </div>
+
+      <button class="secondary-btn account-only hidden" onclick="editCurrentProfile()">Edit Profile</button>
+      <button class="secondary-btn account-only hidden" onclick="switchAccount()">Switch Account</button>
+      <button id="signOutBtn" class="signout-btn hidden" onclick="signOutAccount()">Sign Out</button>
+
+      <div class="profile-options account-only hidden" id="accountOptions">
+        <button onclick="openHistory()">▤ <span><b>Transaction History</b><small>View all completed fuel transactions</small></span>›</button>
+        <button type="button" onclick="openPaymentMethods()">▣ <span><b>Payment Methods</b><small>UPI, cards, wallet & cash</small></span>›</button>
+        <button type="button">⚙ <span><b>Settings</b><small>App preferences</small></span>›</button>
+        <button type="button">? <span><b>Help & Support</b><small>Fuel Me prototype support</small></span>›</button>
+        <button type="button">ⓘ <span><b>About Fuel Me</b><small>College prototype • Version 1.2</small></span>›</button>
+      </div>
+    </main>
+    <nav class="bottom-nav">
+      <button onclick="goHome()"><span>⌂</span>Home</button>
+      <button id="historyNavProfile" class="account-only hidden" onclick="openHistory()"><span>◷</span>History</button>
+      <button class="active"><span>♙</span>Profile</button>
+    </nav>
+  </section>
+
+  <!-- FAILURE -->
+  <section id="failureScreen" class="screen failure-screen hidden">
+    <div class="status-content">
+      <div class="fail-x">×</div>
+      <h1>Payment Failed</h1>
+      <p id="failureText">Something went wrong with your payment.<br>Please try again.</p>
+      <div class="failure-card"><small>Prototype Status</small><b>Payment was not completed.</b><span>No transaction was added to History.</span></div>
+      <button class="primary-btn fail-btn" onclick="openPayment()">Try Again</button>
+      <button class="text-btn" onclick="goHome()">Go to Home</button>
+    </div>
+  </section>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
