@@ -1,4 +1,3 @@
-# FuelMe
 # Fuel Me — Smart Self-Service Fueling
 
 Fuel Me is a **smart self-service fueling web application prototype** designed to make the fuel station experience faster, simpler, and more convenient.
